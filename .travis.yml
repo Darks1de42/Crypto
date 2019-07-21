@@ -10,8 +10,15 @@ before_install:
 install:
   - sudo apt-get install botan
   - sudo apt-get install libboost-all-dev
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-7
+      - g++-7
  
 script:
   - cmake -DCMAKE_BUILD_TYPE=Debug
   - make
-  - ctest -j2
+  
