@@ -11,11 +11,7 @@ install:
   - sudo apt-get install -qq g++-6
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90
   - sudo apt-get install botan
-
-
-
-
-
+  - sudo apt-get install libboost-test-dev
 script:
   - cmake -DCMAKE_BUILD_TYPE=Debug
   - make
