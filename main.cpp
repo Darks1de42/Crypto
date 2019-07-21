@@ -6,6 +6,5 @@ int main() {
     ui.newPassword();
     ui.login();
 
-
     return 0;
 }

@@ -10,11 +10,16 @@
 
 bool User_Interface::login() {
     char password[250];
+    size_t i = 0;
     std::cout << "Hello please give me your password: ";
-    std::cin.getline(reinterpret_cast<char *>(password), 250, '\n');
+    std::cout.flush();
 
 
-    if (Botan::argon2_check_pwhash(reinterpret_cast<const char *>(password), sizeof(password), passwort)) {
+    for (; i < 250 && std::cin.peek() != '\n'; ++i) {
+        password[i] = std::cin.get();
+    }
+
+    if (Botan::argon2_check_pwhash(password, i, passwort)) {
         std::cout << "Herzlichen Glückwunsch Login erfolgreich" << std::endl;
     } else {
         std::cout << "Falsches Passwort eingegeben" << std::endl;
@@ -24,14 +29,30 @@ bool User_Interface::login() {
 }
 
 void User_Interface::newPassword() {
-    Botan::System_RNG rng2;
+    Botan::System_RNG rng2; //Zufallszahlengenerator
 
     std::cout << "Bitte neues Passwort eingeben: ";
     std::cout.flush();
-    std::cin.getline(passwort, 250, '\n');
+    char t[250];
+    size_t i = 0;
+
+    for (; i < 250 && std::cin.peek() != '\n'; ++i) {
+        t[i] = std::cin.get();
+    }
+    passwort = Botan::argon2_generate_pwhash(t, i, rng2, 1, 4000, 1);
 
 
-    std::string t = Botan::argon2_generate_pwhash(passwort, sizeof(passwort), rng2, 1, 4000, 1);
+}
 
+void User_Interface::test() {
+    Botan::System_RNG rng2;
+    std::string passwort = "Geheim";
+    std::string t = Botan::argon2_generate_pwhash(passwort.data(), passwort.size(), rng2, 1, 4000, 1);
+
+    if (Botan::argon2_check_pwhash(passwort.data(), passwort.size(), t)) {
+        std::cout << "Herzlichen Glückwunsch Login erfolgreich" << std::endl;
+    } else {
+        std::cout << "Falsches Passwort eingegeben" << std::endl;
+    }
 
 }
