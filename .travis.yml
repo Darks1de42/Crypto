@@ -11,6 +11,13 @@ install:
   - sudo apt-get install -qq g++-6
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90
 
+
+sourceline: 'ppa:mhier/libboost-latest'
+
+packages:
+  - g++-6
+  - boost1.67
+  -
 script:
   - cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles"
   - make
