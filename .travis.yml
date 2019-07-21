@@ -1,24 +1,23 @@
 ---
 language: cpp
 compiler: gcc
-dist: trusty
+dist: bionic
 
 before_install:
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get update -qq
 
-install:
-  - sudo apt-get install -qq g++-6
-  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90
 
-
-sourceline: 'ppa:mhier/libboost-latest'
-
-packages:
-  - g++-6
-  - boost1.67
-  -
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-7
+      - g++-7
+ 
 script:
-  - cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles"
+  - cmake -DCMAKE_BUILD_TYPE=Debug
   - make
-  - ctest -j2
+  - ctest
+  
