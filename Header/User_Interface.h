@@ -8,7 +8,7 @@
 
 class User_Interface {
 public:
-    void login();
+    bool login();
 
     void newPassword();
 

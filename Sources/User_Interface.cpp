@@ -8,7 +8,7 @@
 
 #include "../Header/User_Interface.h"
 
-void User_Interface::login() {
+bool User_Interface::login() {
     char password[250];
     std::cout << "Hello please give me your password: ";
     std::cin.getline(reinterpret_cast<char *>(password), 250, '\n');
