@@ -1,0 +1,14 @@
+//
+// Created by dragonfire on 28.07.19.
+//
+
+#ifndef BOTANPROJEKT_DATEIVERSCHLUESSELUNG_H
+#define BOTANPROJEKT_DATEIVERSCHLUESSELUNG_H
+
+
+class DateiVerschluesselung {
+
+};
+
+
+#endif //BOTANPROJEKT_DATEIVERSCHLUESSELUNG_H
