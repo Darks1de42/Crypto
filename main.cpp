@@ -7,8 +7,8 @@ int main() {
 
 
     CryptoClass ui;
-    ui.newPassword();
-    ui.login();
+    ui.newPassword("Was geht?");
+    ui.login("Was geht");
     ui.encrypt("Geheimes Passwort");
     ui.decrypt("Geheimes Passwort");
 

@@ -7,23 +7,15 @@
 #include "../Header/CryptoClass.h"
 
 
-bool CryptoClass::login() {
-    char password[250] = {""};
-    size_t i = 0;
-    std::cout << "Hello please give me your password: ";
-    std::cout.flush();
+bool CryptoClass::login(std::string password) {
 
 
-    for (; i < 250 && std::cin.peek() != '\n'; ++i) {
-        password[i] = std::cin.get();
-    }
-
-    if (Botan::argon2_check_pwhash(password, i, loginPassword)) {
-        std::cout << "Herzlichen Glückwunsch Login erfolgreich" << std::endl;
+    if (Botan::argon2_check_pwhash(password.c_str(), password.length(), loginPassword)) {
+        return true;
     } else {
-        std::cout << "Falsches Passwort eingegeben" << std::endl;
         static size_t wrongTries = 0;
         syslog(LOG_ALERT, "False password tries=%zu", ++wrongTries);
+        return false;
 
 
     }
@@ -31,20 +23,14 @@ bool CryptoClass::login() {
 
 }
 
-void CryptoClass::newPassword() {
+void CryptoClass::newPassword(std::string password) {
     Botan::System_RNG rng2; //Zufallszahlengenerator
 
-    std::cout << "Bitte neues Passwort eingeben: ";
-    std::cout.flush();
-    char t[250];
-    size_t i = 0;
 
-    for (; i < 250 && std::cin.peek() != '\n'; ++i) {
-        t[i] = std::cin.get();
-    }
-    std::cin.clear();
-    std::cin.ignore();
-    loginPassword = Botan::argon2_generate_pwhash(t, i, rng2, 1, 4000, 1);
+
+
+    loginPassword = Botan::argon2_generate_pwhash(password.c_str(), password.length(), rng2, 1, 4000, 1);
+    syslog(LOG_NOTICE, "User set new password");
 
 
 }

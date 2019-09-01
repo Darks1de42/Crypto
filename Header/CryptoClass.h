@@ -35,12 +35,12 @@ public:
      * @brief Uses the argon2 password hash algorithm to test if the password is valid
      * @return TRUE if the password is valid
      */
-    bool login();
+    bool login(std::string password);
 
     /**
      * @brief Writes a new password in the loginPassword parameter of the class
      */
-    void newPassword();
+    void newPassword(std::string password);
 
 
     //File encryption and decryption with AES-256
