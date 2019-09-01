@@ -1,16 +1,16 @@
 #include <iostream>
-#include "Header/User_Interface.h"
+#include "Header/CryptoClass.h"
 #include <thread>
 
 
 int main() {
 
 
-    User_Interface ui;
+    CryptoClass ui;
     ui.newPassword();
     ui.login();
-    ui.verschluesseln("Geheimes Passwort");
-    ui.entschluesseln("Geheimes Passwort");
+    ui.encrypt("Geheimes Passwort");
+    ui.decrypt("Geheimes Passwort");
 
 
     return 0;

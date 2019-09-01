@@ -4,10 +4,10 @@
 
 
 
-#include "../Header/User_Interface.h"
+#include "../Header/CryptoClass.h"
 
 
-bool User_Interface::login() {
+bool CryptoClass::login() {
     char password[250] = {""};
     size_t i = 0;
     std::cout << "Hello please give me your password: ";
@@ -18,16 +18,20 @@ bool User_Interface::login() {
         password[i] = std::cin.get();
     }
 
-    if (Botan::argon2_check_pwhash(password, i, passwort)) {
+    if (Botan::argon2_check_pwhash(password, i, loginPassword)) {
         std::cout << "Herzlichen Glückwunsch Login erfolgreich" << std::endl;
     } else {
         std::cout << "Falsches Passwort eingegeben" << std::endl;
+        static size_t wrongTries = 0;
+        syslog(LOG_ALERT, "False password tries=%zu", ++wrongTries);
+
+
     }
 
 
 }
 
-void User_Interface::newPassword() {
+void CryptoClass::newPassword() {
     Botan::System_RNG rng2; //Zufallszahlengenerator
 
     std::cout << "Bitte neues Passwort eingeben: ";
@@ -40,13 +44,14 @@ void User_Interface::newPassword() {
     }
     std::cin.clear();
     std::cin.ignore();
-    passwort = Botan::argon2_generate_pwhash(t, i, rng2, 1, 4000, 1);
+    loginPassword = Botan::argon2_generate_pwhash(t, i, rng2, 1, 4000, 1);
 
 
 }
 
 
-void User_Interface::verschluesseln(std::string &&password) {
+void CryptoClass::encrypt(std::string &&password) {
+
     std::fstream klartextIn, verschluesseltOut;
     std::vector<uint8_t> klartext, verschluesselt;
     klartextIn.open("../datei.txt", std::fstream::in);
@@ -59,13 +64,10 @@ void User_Interface::verschluesseln(std::string &&password) {
 
     std::unique_ptr<Botan::BlockCipher> cipher(Botan::BlockCipher::create("AES-256"));
     cipher->set_key(getHash(password));
-    std::cout << "Schlüsellänge von: "
-              <<
-              cipher->minimum_keylength() << "-" <<
-              cipher->maximum_keylength() << std::endl;
+
     verschluesselt.resize(klartext.size());
     cipher->encrypt_n(klartext.data(), verschluesselt.data(),
-                      calculateBlockSize(cipher->block_size(), klartext.size()));
+                      calculatesBlocks(cipher->block_size(), klartext.size()));
     if (verschluesseltOut.is_open()) {
         for (auto buchstabe : verschluesselt) {
             verschluesseltOut << buchstabe;
@@ -76,7 +78,7 @@ void User_Interface::verschluesseln(std::string &&password) {
 }
 
 
-void User_Interface::entschluesseln(std::string &&password) {
+void CryptoClass::decrypt(std::string &&password) {
     std::fstream klartextOut, verschluesseltIn;
     std::vector<uint8_t> klartext, verschluesselt;
     klartextOut.open("../entschluesselt.txt", std::fstream::out);
@@ -91,17 +93,16 @@ void User_Interface::entschluesseln(std::string &&password) {
     cipher->set_key(getHash(password));
     klartext.resize(verschluesselt.size());
     cipher->decrypt_n(verschluesselt.data(), klartext.data(),
-                      calculateBlockSize(cipher->block_size(), verschluesselt.size()));
+                      calculatesBlocks(cipher->block_size(), verschluesselt.size()));
     if (klartextOut.is_open()) {
         for (auto buchstabe : klartext) {
             klartextOut << buchstabe;
-            std::cout << buchstabe;
         }
     }
     cipher.release();
 }
 
-size_t User_Interface::calculateBlockSize(size_t blocksize, size_t dataLength) {
+size_t CryptoClass::calculatesBlocks(size_t blocksize, size_t dataLength) {
     size_t ergebnis = dataLength / blocksize;
     if (dataLength % blocksize > 0) {
         ++ergebnis;
@@ -110,7 +111,7 @@ size_t User_Interface::calculateBlockSize(size_t blocksize, size_t dataLength) {
 }
 
 
-std::vector<uint8_t> User_Interface::getHash(std::string password) {
+std::vector<uint8_t> CryptoClass::getHash(std::string password) {
 
     password = makeHash(password);
     std::vector<uint8_t> ergebnis;
@@ -121,7 +122,7 @@ std::vector<uint8_t> User_Interface::getHash(std::string password) {
 }
 
 
-std::string User_Interface::makeHash(std::string password) {
+std::string CryptoClass::makeHash(std::string password) {
     std::unique_ptr<Botan::HashFunction> hash1(Botan::HashFunction::create("SHA-256"));
     hash1->update(password);
     return Botan::hex_encode(hash1->final());
