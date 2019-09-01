@@ -12,31 +12,31 @@
 #include <fstream>
 #include <botan/block_cipher.h>
 #include <botan/hex.h>
+#include <botan/hash.h>
 
 
 class User_Interface {
 public:
-    bool login();
 
+    ////Login with password hash algorithm argon2
+    bool login();
     void newPassword();
 
-    static void test();
 
-    void verschluesseln();
+    //File encryption and decryption with AES-256
+    void verschluesseln(std::string &&password);
 
-    void entschluesseln();
+    void entschluesseln(std::string &&password);
 
-
-    static void blockEntschluesselung();
 
 private:
     std::string passwort;
-    char test1[250];
-    char test2[250];
 
-    static size_t berechne(size_t blocksize, size_t dataLength);
-
-    static std::vector<uint8_t> getKey();
+    //Helper functions/////////////////////////////////////
+    static size_t calculateBlockSize(size_t blocksize, size_t dataLength); //defines the Block size for AES-256
+    static std::vector<uint8_t>
+    getHash(std::string password);  //Liefert einen Vector für AES-256 mit dem gehasten Passwort zurück
+    static std::string makeHash(std::string password); //Hasht das Passwort mit SHA-256
 };
 
 
